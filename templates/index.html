@@ -1,0 +1,113 @@
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Image Processing</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var imageInput = document.getElementById("image");
+      var previewImage = document.getElementById("previewImage");
+      var uploadButton = document.getElementById("uploadButton");
+
+      imageInput.addEventListener("change", function () {
+        if (this.files && this.files[0]) {
+          var reader = new FileReader();
+
+          reader.onload = function (e) {
+            previewImage.setAttribute("src", e.target.result);
+            previewImage.style.display = "block";
+            uploadButton.style.display = "block";
+          };
+
+          reader.readAsDataURL(this.files[0]);
+        } else {
+          previewImage.style.display = "none";
+          uploadButton.style.display = "none";
+        }
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="content-wrapper">
+      <div class="headeee">
+        <h2>Andri Efendy (2140304046)</h2>
+        <h1>PAS Pengolahan citra digital</h1>>
+        <h1>Filter Gambar Kamu</h1>
+        <h2>Pilih Gambar dan filter yang anda inginkan</h2>
+      </div>
+
+
+      <!-- Form untuk upload gambar -->
+      <div class="upload-box">
+        <form class="upload-form" method="POST" enctype="multipart/form-data" action="{{ url_for('upload_file') }}">
+          <label for="image" class="custom-file-upload"> Select Photo </label>
+          <input type="file" id="image" name="image" accept="image/*" style="display: none" />
+          <input type="submit" id="uploadButton" value="Upload" style="display: none" class="upload_button" />
+        </form>
+
+        <!-- Preview gambar -->
+        <div class="preview-box">
+          <img id="previewImage" src="" alt="Preview Image" class="uploaded-image" style="display: none" />
+        </div>
+
+        <!-- Menampilkan gambar yang diunggah -->
+        <div>
+          {% if uploaded_image_path %}
+          <img class="uploaded-image" src="{{ uploaded_image_path }}" alt="Uploaded Image" />
+          {% endif %}
+        </div>
+
+        {% if uploaded_image_path %}
+        <!-- Form untuk menambahkan filter gambar -->
+        <form class="filter-form" method="POST" action="{{ url_for('apply_filter') }}">
+          <input type="hidden" name="image_path" value="{{ uploaded_image_path }}" />
+          <button type="submit" name="filter" value="BLUR">Blur</button>
+          <button type="submit" name="filter" value="CONTOUR">Contour</button>
+          <button type="submit" name="filter" value="DETAIL">Detail</button>
+          <button type="submit" name="filter" value="EDGE_ENHANCE">Edge Enhance</button>
+          <button type="submit" name="filter" value="EDGE_ENHANCE_MORE">Edge Enhance More</button>
+          <button type="submit" name="filter" value="EMBOSS">Emboss</button>
+          <button type="submit" name="filter" value="FIND_EDGES">Find Edges</button>
+          <button type="submit" name="filter" value="SHARPEN">Sharpen</button>
+          <button type="submit" name="filter" value="SMOOTH">Smooth</button>
+          <button type="submit" name="filter" value="SMOOTH_MORE">Smooth More</button>
+          <button type="submit" name="filter" value="SOLARIZE">Solarize</button>
+          <button type="submit" name="filter" value="POSTERIZE">Posterize</button>
+          <button type="submit" name="filter" value="AUTOCONTRAST">Autocontrast</button>
+          <button type="submit" name="filter" value="GAUSSIAN_BLUR">Gaussian Blur</button>
+          <button type="submit" name="filter" value="INVERT_COLOR">Invert Color</button>
+          <button type="submit" name="filter" value="GRAYSCALE">Grayscale</button>
+          </button>
+        </form>
+        {% endif %}
+
+        <!-- Menampilkan hasil gambar yang diproses -->
+        {% if processed_image_path %}
+        <div class="processed-image">
+          <h1>Processed Image</h1>
+          <img src="{{ processed_image_path }}" alt="Processed Image" class="processed-image" />
+          <button onclick="downloadImage('{{ processed_image_path }}')" class="download-link">
+            Download
+          </button>
+          <button onclick="goBack()" class="back-button">Back</button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <script>
+    function downloadImage(filename) {
+      window.location.href =
+        "{{ url_for('download_image') }}?filename=" + filename;
+    }
+    function goBack() {
+      window.history.back();
+    }
+  </script>
+</body>
+
+</html>
